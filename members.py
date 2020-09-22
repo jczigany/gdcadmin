@@ -20,7 +20,7 @@ class manageMembers(QMainWindow):
         self.table_name = "members"
 
         main_layout.addWidget(self.table_view)
-        fejlec = ['id', "Csapat neve", "Rövid név "]
+        fejlec = ['id', "Vezetéknév", "Utónév", "Született", "Ir.szám", "Helység", "Cím", "Telefon", "E-mail", "Tagság kezdete"]
         self.model = TableModel(self.table_name, fejlec)
         # self.model = TableModel(self.table_name)
         # print(self.model.fejlec)
@@ -34,9 +34,9 @@ class manageMembers(QMainWindow):
         gomb_layout = QVBoxLayout()
         main_layout.addLayout(gomb_layout)
 
-        self.delete_button = QPushButton("&Csapat törlése")
-        self.add_button = QPushButton("&Új csapat")
-        self.modify_button = QPushButton("&Modify Record")
+        self.delete_button = QPushButton("&Tag törlése")
+        self.add_button = QPushButton("&Új tag")
+        self.modify_button = QPushButton("Tag &módosítása")
 
         gomb_layout.addWidget(self.delete_button)
         gomb_layout.addWidget(self.add_button)
@@ -45,7 +45,7 @@ class manageMembers(QMainWindow):
         gomb_layout.addItem(self.space)
 
         # self.resize(320, 200)
-        self.setFixedSize(320, 200)
+        self.setFixedSize(600, 480)
         self.setWindowFlags(Qt.Window|Qt.WindowTitleHint)
         tb = self.addToolBar("File")
 

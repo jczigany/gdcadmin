@@ -13,7 +13,7 @@ client = MysqlClient()
 class AppWindows(QMainWindow):
     def __init__(self):
         super(AppWindows, self).__init__()
-        self.setWindowTitle("Darts For G.D.C powered by Jcigi")
+        self.setWindowTitle("Admin for G.D.C powered by Jcigi")
         self.resize(800,600)
         widget = QWidget()
         main_layout = QVBoxLayout()
@@ -34,6 +34,7 @@ class AppWindows(QMainWindow):
     def new_member(self):
         print("Új csapattag dialog")
         manage_members_window = manageMembers(self)
+        # self.resize(600,400)
         manage_members_window.show()
 
     @Slot()

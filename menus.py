@@ -38,7 +38,7 @@ def create_menus(self):
     #
     # # Új Csapat action
     new_team_action = QAction("Csapatok kezelése", self)
-    new_team_action.setShortcut("Ctrl+T")
+    new_team_action.setShortcut("Ctrl+ G")
     new_team_action.triggered.connect(self.new_team)
     self.tools_menu.addAction(new_team_action)
     #

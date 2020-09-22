@@ -92,7 +92,7 @@ class MysqlClient(QObject):
         if "date" in all_rows2[len(all_rows2) - 1][1]:
             sql += f"'{rekord[len(all_rows2) - 1]}' "
         sql += ")"
-        print(sql)
+        # print(sql)
         self.cursor.execute(sql)
         self.cursor.execute("SELECT LAST_INSERT_ID()")
         insert_id = self.cursor.fetchall()
