@@ -10,11 +10,11 @@ class MysqlClient(QObject):
         super(MysqlClient, self).__init__()
 
         self.db = connector.connect(
-            host="37.143.78.37",
-            port=6603,
-            user="dfcuser",
-            passwd="DfcAdmin1968",
-            database="dfcdb"
+            host="127.0.0.1",
+            port=3306,
+            user="gdcadminuser",
+            passwd="GdcAdmin1968",
+            database="gdcadmindb"
         )
         self.cursor = self.db.cursor()
 
@@ -83,12 +83,16 @@ class MysqlClient(QObject):
                 sql += f"{rekord[i]}, "
             if "varchar" in all_rows2[i][1]:
                 sql += f"'{rekord[i]}', "
+            if "date" in all_rows2[i][1]:
+                sql += f"'{rekord[i]}', "
         if "int" in all_rows2[len(all_rows2) - 1][1]:
             sql += f"{rekord[len(all_rows2) - 1]} "
         if "varchar" in all_rows2[len(all_rows2) - 1][1]:
             sql += f"'{rekord[len(all_rows2) - 1]}' "
+        if "date" in all_rows2[len(all_rows2) - 1][1]:
+            sql += f"'{rekord[len(all_rows2) - 1]}' "
         sql += ")"
-
+        print(sql)
         self.cursor.execute(sql)
         self.cursor.execute("SELECT LAST_INSERT_ID()")
         insert_id = self.cursor.fetchall()
