@@ -37,10 +37,15 @@ class MysqlClient(QObject):
         data = []
         if self.exist_table(table):
             self.cursor.execute(f"SELECT * FROM {table}")
+            # print(self.cursor.fetchall())
+
             field_names = [i[0] for i in self.cursor.description]
             adatok = [list(row) for row in self.cursor.fetchall()]
+
             data.append(adatok)
+
             data.append(field_names)
+            # print(data)
             return data
 
         return None
@@ -57,6 +62,7 @@ class MysqlClient(QObject):
         return None
 
     def update_table(self, table, rekord: list):
+        print(rekord)
         sql = f"UPDATE {table} SET "
         all_rows2 = self.get_mezonevek(table)
         for i in range(1, len(all_rows2)):
@@ -65,9 +71,11 @@ class MysqlClient(QObject):
                 sql += f"{rekord[i]}, "
             if "varchar" in all_rows2[i][1]:
                 sql += f"'{rekord[i]}', "
+            if "date" in all_rows2[i][1]:
+                sql += f"'{rekord[i]}', "
         sql += f"{all_rows2[0][0]}={rekord[0]}"
         sql += f" WHERE {all_rows2[0][0]}={rekord[0]}"
-
+        print(sql)
         self.cursor.execute(sql)
         self.db.commit()
         return

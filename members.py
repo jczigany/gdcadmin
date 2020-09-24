@@ -45,7 +45,7 @@ class manageMembers(QMainWindow):
         gomb_layout.addItem(self.space)
 
         # self.resize(320, 200)
-        self.setFixedSize(600, 480)
+        self.setFixedSize(800, 600)
         self.setWindowFlags(Qt.Window|Qt.WindowTitleHint)
         tb = self.addToolBar("File")
 
@@ -54,15 +54,21 @@ class manageMembers(QMainWindow):
         tb.addAction(exit)
 
         # self.delete_button.clicked.connect(lambda: self.model.delete(self.table_view.selectedIndexes()[0]))
-        self.delete_button.clicked.connect(self.csapat_torles)
+        self.delete_button.clicked.connect(self.tag_torles)
         self.add_button.clicked.connect(self.model.add)
-        # self.modify_button.clicked.connect(self.modify)
+        self.modify_button.clicked.connect(self.tag_modositas)
 
-    def csapat_torles(self):
+    def tag_torles(self):
         if len(self.table_view.selectedIndexes()) > 0:
             self.model.delete(self.table_view.selectedIndexes()[0])
         else:
-            reply = QMessageBox.question(None, 'Hiba!', 'Törlés előtt válasszon csapatot!', QMessageBox.Ok)
+            reply = QMessageBox.question(None, 'Hiba!', 'Törlés előtt jelöljön ki egy sort!', QMessageBox.Ok)
+
+    def tag_modositas(self):
+        if len(self.table_view.selectedIndexes()) > 0:
+            self.model.modify(self.table_view.selectedIndexes()[0])
+        else:
+            reply = QMessageBox.question(None, 'Hiba!', 'Módosítás előtt jelöljön ki egy sort!', QMessageBox.Ok)
 
     def toolbarpressed(self, a):
         print("Pressed:", a.text())

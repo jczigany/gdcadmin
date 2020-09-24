@@ -14,7 +14,7 @@ class AppWindows(QMainWindow):
     def __init__(self):
         super(AppWindows, self).__init__()
         self.setWindowTitle("Admin for G.D.C powered by Jcigi")
-        self.resize(800,600)
+        self.resize(1000,800)
         widget = QWidget()
         main_layout = QVBoxLayout()
         widget.setLayout(main_layout)
