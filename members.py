@@ -2,7 +2,7 @@ from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMainWindow, QTableView, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, \
     QAction, QSpacerItem, QSizePolicy, QMessageBox
 from PySide2.QtCore import *
-from modell import TableModel
+from members_modell import TableModel
 from database.db import MysqlClient
 
 class manageMembers(QMainWindow):
