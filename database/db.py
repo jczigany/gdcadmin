@@ -83,17 +83,22 @@ class MysqlClient(QObject):
     def insert_rekord(self, table, rekord: list):
         sql = f"INSERT INTO {table} ("
         all_rows2 = self.get_mezonevek(table)
+        # print(all_rows2)
         for i in range(1, len(all_rows2) - 1):
             sql += f"{all_rows2[i][0]}, "
         sql += f"{all_rows2[len(all_rows2) - 1][0]}) VALUES ("
         for i in range(1, len(all_rows2) - 1):
             if "int" in all_rows2[i][1]:
                 sql += f"{rekord[i]}, "
+            if "decimal" in all_rows2[i][1]:
+                sql += f"{rekord[i]}, "
             if "varchar" in all_rows2[i][1]:
                 sql += f"'{rekord[i]}', "
             if "date" in all_rows2[i][1]:
                 sql += f"'{rekord[i]}', "
         if "int" in all_rows2[len(all_rows2) - 1][1]:
+            sql += f"{rekord[len(all_rows2) - 1]} "
+        if "decimal" in all_rows2[len(all_rows2) - 1][1]:
             sql += f"{rekord[len(all_rows2) - 1]} "
         if "varchar" in all_rows2[len(all_rows2) - 1][1]:
             sql += f"'{rekord[len(all_rows2) - 1]}' "

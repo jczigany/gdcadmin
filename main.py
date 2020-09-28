@@ -3,7 +3,7 @@ from PySide2.QtWidgets import QMainWindow, QTableView, QWidget, QApplication, QV
     QFormLayout, QDialog, QLineEdit, QDialogButtonBox
 from PySide2.QtCore import *
 from menus import create_menus
-from teams import manageTeams
+from tagdij_modell import MyFormDialog
 from members import manageMembers
 
 import sys
@@ -38,10 +38,18 @@ class AppWindows(QMainWindow):
         manage_members_window.show()
 
     @Slot()
-    def new_team(self):
-        print("Új Csapat dialog")
-        maname_tems_window = manageTeams(self)
-        maname_tems_window.show()
+    def new_tagdij(self):
+        print("Új Tagdíj dialog")
+        self.form_window = MyFormDialog()
+        self.form_window.setWindowTitle("Tagdíj befizetés")
+        self.form_window.show()
+        if self.form_window.exec_():
+            mezo_rekord = [0]
+
+            for i in range(len(self.form_window.mezo_ertekek)):
+                mezo_rekord.append(self.form_window.mezo_ertekek[i].text())
+
+            insert_id = client.insert_rekord("kassza", mezo_rekord)
 
 
 
