@@ -1,5 +1,5 @@
-from datetime import datetime
-from PySide2.QtWidgets import QFormLayout, QDialog, QLineEdit, QDialogButtonBox, QCompleter
+from datetime import datetime, date
+from PySide2.QtWidgets import QFormLayout, QDialog, QLineEdit, QDialogButtonBox, QCompleter, QDateEdit
 from PySide2.QtCore import *
 from PySide2.QtGui import QRegExpValidator
 from database.db import MysqlClient
@@ -46,19 +46,35 @@ class MyFormDialog(QDialog):
         self.mezo_nevek.append("Megjegyzés")
 
         for i in range(len(self.mezo_nevek)):
-            mezo = QLineEdit()
-            if (self.mezo_nevek[i] == "Befizető"):
-                mezo.setCompleter(nev_completer)
-            if (self.mezo_nevek[i] == "Jogcím"):
-                mezo.setCompleter(jogcim_completer)
-            if (self.mezo_nevek[i] == "Év"):
-                mezo.setValidator(evvalidator)
-            if (self.mezo_nevek[i] == "Hónap"):
-                mezo.setValidator(honapvalidator)
             if (self.mezo_nevek[i] == "Dátum"):
-                mezo.setText(datetime.today().strftime('%Y-%m-%d'))
-                mezo.setValidator(datumvalidator)
-            self.mezo_ertekek.append(mezo)
+                datum = QLineEdit()
+                datum.setText(datetime.today().strftime('%Y-%m-%d'))
+                datum.setValidator(datumvalidator)
+                self.mezo_ertekek.append(datum)
+            if (self.mezo_nevek[i] == "Befizető"):
+                self.befizeto = QLineEdit()
+                self.befizeto.setCompleter(nev_completer)
+                self.mezo_ertekek.append(self.befizeto)
+                self.befizeto.editingFinished.connect(self.befizetoselected)
+            if (self.mezo_nevek[i] == "Jogcím"):
+                self.jogcim = QLineEdit()
+                self.jogcim.setCompleter(jogcim_completer)
+                self.mezo_ertekek.append(self.jogcim)
+            if (self.mezo_nevek[i] == "Év"):
+                ev = QLineEdit()
+                ev.setValidator(evvalidator)
+                self.mezo_ertekek.append(ev)
+            if (self.mezo_nevek[i] == "Hónap"):
+                honap = QLineEdit()
+                honap.setValidator(honapvalidator)
+                self.mezo_ertekek.append(honap)
+            if (self.mezo_nevek[i] == "Összeg"):
+                self.osszeg = QLineEdit()
+                self.mezo_ertekek.append(self.osszeg)
+            if (self.mezo_nevek[i] == "Megjegyzés"):
+                megjegyzes = QLineEdit()
+                self.mezo_ertekek.append(megjegyzes)
+
             self.layout.addRow(f"{self.mezo_nevek[i]}", self.mezo_ertekek[i])
 
         buttonbox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -76,3 +92,28 @@ class MyFormDialog(QDialog):
         adatok = [list(row)[0] for row in client.cursor.fetchall()]
         self.jogcim_model.setStringList(adatok)
 
+    def befizetoselected(self):
+        """ Itt lehet majd kiértékelni, hogy db-ben benne van-e a befizető. Ha igen, akkor a születési dátum
+        alapján a jogcím (Tagdíj/Ifjúsági tagdíj) illetve az összeg (1.500/3.000) automatikusan kitölthető"""
+        print(self.befizeto.text())
+        if (self.befizeto.text() in self.nev_model.stringList()):
+            client.cursor.execute(f"SELECT szuletesi_ido FROM members WHERE CONCAT(vezeteknev, ' ', utonev)= '{self.befizeto.text()}'")
+            adatok = [list(row) for row in client.cursor.fetchall()]
+            # Ha 12 évnél fiatalabb
+            if ((date.today() - adatok[0][0]).days < 4380):
+                print("Ingyenes")
+                self.jogcim.setText("Ingyenes")
+                self.osszeg.setText("0")
+            # Ha 14 évnél idősebb
+            elif ((date.today() - adatok[0][0]).days > 5110):
+                print("Felnőtt")
+                self.jogcim.setText("Tagdíj")
+                self.osszeg.setText("3000")
+            # Egyébként (Ha 12-14 között van)
+            else:
+                print("Ifjúsági")
+                self.jogcim.setText("Ifjúsági tagdíj")
+                self.osszeg.setText("1500")
+
+        else:
+            print("Nincs db-ben")
