@@ -4,6 +4,7 @@ from PySide2.QtWidgets import QMainWindow, QTableView, QWidget, QApplication, QV
 from PySide2.QtCore import *
 from menus import create_menus
 from tagdij_modell import MyFormDialog
+from berlet_modell import BerletFormDialog
 from members import manageMembers
 
 import sys
@@ -40,17 +41,30 @@ class AppWindows(QMainWindow):
     @Slot()
     def new_tagdij(self):
         print("Új Tagdíj dialog")
-        self.form_window = MyFormDialog()
-        self.form_window.setWindowTitle("Tagdíj befizetés")
-        self.form_window.show()
-        if self.form_window.exec_():
+        self.tagdij_form_window = MyFormDialog()
+        self.tagdij_form_window.setWindowTitle("Tagdíj befizetés")
+        self.tagdij_form_window.show()
+        if self.tagdij_form_window.exec_():
             mezo_rekord = [0]
 
-            for i in range(len(self.form_window.mezo_ertekek)):
-                mezo_rekord.append(self.form_window.mezo_ertekek[i].text())
+            for i in range(len(self.tagdij_form_window.mezo_ertekek)):
+                mezo_rekord.append(self.tagdij_form_window.mezo_ertekek[i].text())
 
             insert_id = client.insert_rekord("kassza", mezo_rekord)
 
+    @Slot()
+    def new_berlet(self):
+        print("Bérlet vásárlás dialog")
+        self.berlet_form_window = BerletFormDialog()
+        self.berlet_form_window.setWindowTitle("Bérlet vásárlás")
+        self.berlet_form_window.show()
+        if self.berlet_form_window.exec_():
+            mezo_rekord = [0]
+
+            for i in range(len(self.berlet_form_window.mezo_ertekek)):
+                mezo_rekord.append(self.berlet_form_window.mezo_ertekek[i].text())
+
+            insert_id = client.insert_rekord("kassza", mezo_rekord)
 
 
 if __name__ == '__main__':

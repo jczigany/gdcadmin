@@ -22,8 +22,13 @@ def create_menus(self):
 
     # Pénzügyek menü
     self.finance_menu = self.menu.addMenu("Pénzügyek")
-    # # Új Csapat action
+    # Tagdíj befizetés action
     new_tagdij_action = QAction("Tagdíj befizetés", self)
     new_tagdij_action.setShortcut("Ctrl+H")
     new_tagdij_action.triggered.connect(self.new_tagdij)
     self.finance_menu.addAction(new_tagdij_action)
+    # Bérlet vásárlás action
+    new_berlet_action = QAction("Bérlet vásárlás", self)
+    new_berlet_action.setShortcut("Ctrl+B")
+    new_berlet_action.triggered.connect(self.new_berlet)
+    self.finance_menu.addAction(new_berlet_action)

@@ -7,14 +7,14 @@ from database.db import MysqlClient
 client = MysqlClient()
 
 
-class MyFormDialog(QDialog):
+class BerletFormDialog(QDialog):
     """ A fogadott paraméter (table) alapján állítjuk össze a form-ot.
         Lekérdezzük a tábla struktúrát és összerakjuk a mezőnevek listáját,
         kihagyva a Primary mező-nevet. Ezek lesznek a LABEl-ek. A mező értékeket
         szintén egy LIST-ben tárojuk a későbbi feldolgozás lehetővé tétele érdekében"""
 
     def __init__(self):
-        super(MyFormDialog, self).__init__()
+        super(BerletFormDialog, self).__init__()
         self.mezo_nevek = []
         self.mezo_ertekek = []
         self.layout = QFormLayout()
@@ -27,11 +27,11 @@ class MyFormDialog(QDialog):
         reg_datum = QRegExp('(19[0-9]{2}\\-([0][1-9]|[1][0-2])\\-([0][1-9]|[1-2][0-9]|3[0-1]))|(20[0-9]{2}\\-([0][1-9]|[1][0-2])\\-([0][1-9]|[1-2][0-9]|3[0-1]))')
         datumvalidator = QRegExpValidator(reg_datum)
 
-        nev_completer = QCompleter()
-        self.nev_model = QStringListModel()
-        nev_completer.setModel(self.nev_model)
-        self.get_nevdata()
-
+        # nev_completer = QCompleter()
+        # self.nev_model = QStringListModel()
+        # nev_completer.setModel(self.nev_model)
+        # self.get_nevdata()
+        #
         jogcim_completer = QCompleter()
         self.jogcim_model = QStringListModel()
         jogcim_completer.setModel(self.jogcim_model)
@@ -59,9 +59,9 @@ class MyFormDialog(QDialog):
                 self.mezo_ertekek.append(datum)
             if (self.mezo_nevek[i] == "Befizető"):
                 self.befizeto = QLineEdit()
-                self.befizeto.setCompleter(nev_completer)
+                # self.befizeto.setCompleter(nev_completer)
                 self.mezo_ertekek.append(self.befizeto)
-                self.befizeto.editingFinished.connect(self.befizetoselected)
+                # self.befizeto.editingFinished.connect(self.befizetoselected)
             if (self.mezo_nevek[i] == "Jogcím"):
                 self.jogcim = QLineEdit()
                 self.jogcim.setCompleter(jogcim_completer)
@@ -93,11 +93,11 @@ class MyFormDialog(QDialog):
         buttonbox.rejected.connect(self.reject)
         self.layout.addWidget(buttonbox)
 
-    def get_nevdata(self):
-        client.cursor.execute("SELECT concat(vezeteknev, ' ', utonev) as nev FROM members order by nev")
-        adatok = [list(row)[0] for row in client.cursor.fetchall()]
-        self.nev_model.setStringList(adatok)
-
+    # def get_nevdata(self):
+    #     client.cursor.execute("SELECT concat(vezeteknev, ' ', utonev) as nev FROM members order by nev")
+    #     adatok = [list(row)[0] for row in client.cursor.fetchall()]
+    #     self.nev_model.setStringList(adatok)
+    #
     def get_jogcimdata(self):
         client.cursor.execute("SELECT jogcim FROM jogcim order by jogcim")
         adatok = [list(row)[0] for row in client.cursor.fetchall()]
@@ -105,29 +105,29 @@ class MyFormDialog(QDialog):
 
     def get_fizmoddata(self):
         self.fizmod_model.setStringList(["Készpénz", "Átutalás"])
-
-    def befizetoselected(self):
-        """ Itt lehet majd kiértékelni, hogy db-ben benne van-e a befizető. Ha igen, akkor a születési dátum
-        alapján a jogcím (Tagdíj/Ifjúsági tagdíj) illetve az összeg (1.500/3.000) automatikusan kitölthető"""
-        print(self.befizeto.text())
-        if (self.befizeto.text() in self.nev_model.stringList()):
-            client.cursor.execute(f"SELECT szuletesi_ido FROM members WHERE CONCAT(vezeteknev, ' ', utonev)= '{self.befizeto.text()}'")
-            adatok = [list(row) for row in client.cursor.fetchall()]
-            # Ha 12 évnél fiatalabb
-            if ((date.today() - adatok[0][0]).days < 4380):
-                print("Ingyenes")
-                self.jogcim.setText("Ingyenes")
-                self.osszeg.setText("0")
-            # Ha 14 évnél idősebb
-            elif ((date.today() - adatok[0][0]).days > 5110):
-                print("Felnőtt")
-                self.jogcim.setText("Tagdíj")
-                self.osszeg.setText("3000")
-            # Egyébként (Ha 12-14 között van)
-            else:
-                print("Ifjúsági")
-                self.jogcim.setText("Ifjúsági tagdíj")
-                self.osszeg.setText("1500")
-
-        else:
-            print("Nincs db-ben")
+    #
+    # def befizetoselected(self):
+    #     """ Itt lehet majd kiértékelni, hogy db-ben benne van-e a befizető. Ha igen, akkor a születési dátum
+    #     alapján a jogcím (Tagdíj/Ifjúsági tagdíj) illetve az összeg (1.500/3.000) automatikusan kitölthető"""
+    #     print(self.befizeto.text())
+    #     if (self.befizeto.text() in self.nev_model.stringList()):
+    #         client.cursor.execute(f"SELECT szuletesi_ido FROM members WHERE CONCAT(vezeteknev, ' ', utonev)= '{self.befizeto.text()}'")
+    #         adatok = [list(row) for row in client.cursor.fetchall()]
+    #         # Ha 12 évnél fiatalabb
+    #         if ((date.today() - adatok[0][0]).days < 4380):
+    #             print("Ingyenes")
+    #             self.jogcim.setText("Ingyenes")
+    #             self.osszeg.setText("0")
+    #         # Ha 14 évnél idősebb
+    #         elif ((date.today() - adatok[0][0]).days > 5110):
+    #             print("Felnőtt")
+    #             self.jogcim.setText("Tagdíj")
+    #             self.osszeg.setText("3000")
+    #         # Egyébként (Ha 12-14 között van)
+    #         else:
+    #             print("Ifjúsági")
+    #             self.jogcim.setText("Ifjúsági tagdíj")
+    #             self.osszeg.setText("1500")
+    #
+    #     else:
+    #         print("Nincs db-ben")
