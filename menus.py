@@ -13,22 +13,40 @@ def create_menus(self):
     self.file_menu.addAction(exit_action)
 
     # Csapat-tagok menü
-    self.member_menu = self.menu.addMenu("Csapattagok")
+    self.member_menu = self.menu.addMenu("Tagság")
     # Új tag action
     new_member_action = QAction("Tagok kezelése", self)
     new_member_action.setShortcut("Ctrl+T")
     new_member_action.triggered.connect(self.new_member)
     self.member_menu.addAction(new_member_action)
 
-    # Pénzügyek menü
-    self.finance_menu = self.menu.addMenu("Pénzügyek")
+    # Befizetések menü
+    self.befizetes_menu = self.menu.addMenu("Bevétel")
     # Tagdíj befizetés action
     new_tagdij_action = QAction("Tagdíj befizetés", self)
     new_tagdij_action.setShortcut("Ctrl+H")
     new_tagdij_action.triggered.connect(self.new_tagdij)
-    self.finance_menu.addAction(new_tagdij_action)
+    self.befizetes_menu.addAction(new_tagdij_action)
     # Bérlet vásárlás action
     new_berlet_action = QAction("Bérlet vásárlás", self)
     new_berlet_action.setShortcut("Ctrl+B")
     new_berlet_action.triggered.connect(self.new_berlet)
-    self.finance_menu.addAction(new_berlet_action)
+    self.befizetes_menu.addAction(new_berlet_action)
+    # Napidíj action
+    new_napidij_action = QAction("Napidíj befizetés", self)
+    new_napidij_action.setShortcut("Ctrl+N")
+    new_napidij_action.triggered.connect(self.new_napidij)
+    self.befizetes_menu.addAction(new_napidij_action)
+    # Adomány action
+    new_adomany_action = QAction("Adomány befizetés", self)
+    new_adomany_action.setShortcut("Ctrl+A")
+    new_adomany_action.triggered.connect(self.new_adomany)
+    self.befizetes_menu.addAction(new_adomany_action)
+    # Egyéb befizetés action
+    new_egyebfiz_action = QAction("Egyéb befizetés", self)
+    new_egyebfiz_action.setShortcut("Ctrl+E")
+    new_egyebfiz_action.triggered.connect(self.new_egyebfiz)
+    self.befizetes_menu.addAction(new_egyebfiz_action)
+
+    # Kiadások menü
+    self.kiadasok_menu = self.menu.addMenu("Kiadás")

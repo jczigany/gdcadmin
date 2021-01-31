@@ -5,6 +5,9 @@ from PySide2.QtCore import *
 from menus import create_menus
 from tagdij_modell import MyFormDialog
 from berlet_modell import BerletFormDialog
+from napidij_modell import NapidijFormDialog
+from adomany_modell import AdomanyFormDialog
+from egyeb_befiz_modell import EgyebBefizFormDialog
 from members import manageMembers
 
 import sys
@@ -21,13 +24,11 @@ class AppWindows(QMainWindow):
         widget.setLayout(main_layout)
         self.setCentralWidget(widget)
         # A menus.py definiálja a menüpontokat
-        # create_slots(self)
         create_menus(self)
 
         self.client = MysqlClient()
 
     @Slot()
-    # def exit_app(self, checked):
     def exit_app(self):
         QApplication.quit()
 
@@ -35,7 +36,6 @@ class AppWindows(QMainWindow):
     def new_member(self):
         print("Új csapattag dialog")
         manage_members_window = manageMembers(self)
-        # self.resize(600,400)
         manage_members_window.show()
 
     @Slot()
@@ -66,6 +66,53 @@ class AppWindows(QMainWindow):
 
             insert_id = client.insert_rekord("kassza", mezo_rekord)
 
+    @Slot()
+    def new_napidij(self):
+        print("Napidíj befizetés")
+        self.napidij_form_window = NapidijFormDialog()
+        self.napidij_form_window.setWindowTitle("Napidíj befizetés")
+        self.napidij_form_window.show()
+        if self.napidij_form_window.exec_():
+            mezo_rekord = [0]
+            for i in range(len(self.napidij_form_window.mezo_ertekek)):
+                mezo_rekord.append(self.napidij_form_window.mezo_ertekek[i].text())
+            mezo_rekord.insert(5, "0")
+            mezo_rekord.insert(6, "0")
+            print(mezo_rekord)
+
+            insert_id = client.insert_rekord("kassza", mezo_rekord)
+
+    @Slot()
+    def new_adomany(self):
+        print("Adomány befizetés")
+        self.adomany_form_window = AdomanyFormDialog()
+        self.adomany_form_window.setWindowTitle("Adomány befizetés")
+        self.adomany_form_window.show()
+        if self.adomany_form_window.exec_():
+            mezo_rekord = [0]
+            for i in range(len(self.adomany_form_window.mezo_ertekek)):
+                mezo_rekord.append(self.adomany_form_window.mezo_ertekek[i].text())
+            mezo_rekord.insert(5, "0")
+            mezo_rekord.insert(6, "0")
+            print(mezo_rekord)
+
+            insert_id = client.insert_rekord("kassza", mezo_rekord)
+
+    @Slot()
+    def new_egyebfiz(self):
+        print("Egyéb befizetés")
+        self.egyebbefiz_form_window = EgyebBefizFormDialog()
+        self.egyebbefiz_form_window.setWindowTitle("Egyéb befizetés")
+        self.egyebbefiz_form_window.show()
+        if self.egyebbefiz_form_window.exec_():
+            mezo_rekord = [0]
+            for i in range(len(self.egyebbefiz_form_window.mezo_ertekek)):
+                mezo_rekord.append(self.egyebbefiz_form_window.mezo_ertekek[i].text())
+            mezo_rekord.insert(5, "0")
+            mezo_rekord.insert(6, "0")
+            print(mezo_rekord)
+
+            insert_id = client.insert_rekord("kassza", mezo_rekord)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

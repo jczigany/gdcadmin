@@ -7,23 +7,19 @@ from database.db import MysqlClient
 client = MysqlClient()
 
 
-class BerletFormDialog(QDialog):
+class NapidijFormDialog(QDialog):
     """ A fogadott paraméter (table) alapján állítjuk össze a form-ot.
         Lekérdezzük a tábla struktúrát és összerakjuk a mezőnevek listáját,
         kihagyva a Primary mező-nevet. Ezek lesznek a LABEl-ek. A mező értékeket
         szintén egy LIST-ben tárojuk a későbbi feldolgozás lehetővé tétele érdekében"""
 
     def __init__(self):
-        super(BerletFormDialog, self).__init__()
+        super(NapidijFormDialog, self).__init__()
         self.mezo_nevek = []
         self.mezo_ertekek = []
         self.layout = QFormLayout()
         self.setLayout(self.layout)
 
-        reg_ev = QRegExp('202[0-9]{1}')
-        evvalidator = QRegExpValidator(reg_ev)
-        reg_honap = QRegExp('([0][1-9]|[1][0-2])')
-        honapvalidator = QRegExpValidator(reg_honap)
         reg_datum = QRegExp('(19[0-9]{2}\\-([0][1-9]|[1][0-2])\\-([0][1-9]|[1-2][0-9]|3[0-1]))|(20[0-9]{2}\\-([0][1-9]|[1][0-2])\\-([0][1-9]|[1-2][0-9]|3[0-1]))')
         datumvalidator = QRegExpValidator(reg_datum)
 
@@ -41,8 +37,8 @@ class BerletFormDialog(QDialog):
         self.mezo_nevek.append("Nyugta száma")
         self.mezo_nevek.append("Befizető")
         self.mezo_nevek.append("Jogcím")
-        self.mezo_nevek.append("Év")
-        self.mezo_nevek.append("Hónap")
+        # self.mezo_nevek.append("Év")
+        # self.mezo_nevek.append("Hónap")
         self.mezo_nevek.append("Összeg")
         self.mezo_nevek.append("Fizetési mód")
         self.mezo_nevek.append("Megjegyzés")
@@ -59,19 +55,12 @@ class BerletFormDialog(QDialog):
                 self.mezo_ertekek.append(nyugta)
             if (self.mezo_nevek[i] == "Befizető"):
                 self.befizeto = QLineEdit()
+                self.befizeto.setText("Vendég")
                 self.mezo_ertekek.append(self.befizeto)
             if (self.mezo_nevek[i] == "Jogcím"):
                 self.jogcim = QLineEdit()
                 self.jogcim.setCompleter(jogcim_completer)
                 self.mezo_ertekek.append(self.jogcim)
-            if (self.mezo_nevek[i] == "Év"):
-                ev = QLineEdit()
-                ev.setValidator(evvalidator)
-                self.mezo_ertekek.append(ev)
-            if (self.mezo_nevek[i] == "Hónap"):
-                honap = QLineEdit()
-                honap.setValidator(honapvalidator)
-                self.mezo_ertekek.append(honap)
             if (self.mezo_nevek[i] == "Összeg"):
                 self.osszeg = QLineEdit()
                 self.mezo_ertekek.append(self.osszeg)

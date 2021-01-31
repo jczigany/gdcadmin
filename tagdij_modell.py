@@ -43,6 +43,7 @@ class MyFormDialog(QDialog):
         self.get_fizmoddata()
 
         self.mezo_nevek.append("Dátum")
+        self.mezo_nevek.append("Nyugta száma")
         self.mezo_nevek.append("Befizető")
         self.mezo_nevek.append("Jogcím")
         self.mezo_nevek.append("Év")
@@ -57,6 +58,11 @@ class MyFormDialog(QDialog):
                 datum.setText(datetime.today().strftime('%Y-%m-%d'))
                 datum.setValidator(datumvalidator)
                 self.mezo_ertekek.append(datum)
+            if (self.mezo_nevek[i] == "Nyugta száma"):
+                nyugta = QLineEdit()
+                nyugta.setText("0")
+                #datum.setValidator(datumvalidator)
+                self.mezo_ertekek.append(nyugta)
             if (self.mezo_nevek[i] == "Befizető"):
                 self.befizeto = QLineEdit()
                 self.befizeto.setCompleter(nev_completer)
@@ -129,5 +135,5 @@ class MyFormDialog(QDialog):
                 self.jogcim.setText("Ifjúsági tagdíj")
                 self.osszeg.setText("1500")
 
-        else:
-            print("Nincs db-ben")
+        # else:
+        #     print("Nincs db-ben")
