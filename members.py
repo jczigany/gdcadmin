@@ -4,6 +4,7 @@ from PySide2.QtWidgets import QMainWindow, QTableView, QWidget, QVBoxLayout, QHB
 from PySide2.QtCore import *
 from members_modell import TableModel
 from database.db import MysqlClient
+import pyexcel as p
 
 class manageMembers(QMainWindow):
     def __init__(self, parent):
@@ -23,7 +24,7 @@ class manageMembers(QMainWindow):
         fejlec = ['id', "Vezetéknév", "Utónév", "Született", "Ir.szám", "Helység", "Cím", "Telefon", "E-mail", "Tagság kezdete"]
         self.model = TableModel(self.table_name, fejlec)
         # self.model = TableModel(self.table_name)
-        # print(self.model.fejlec)
+        # print(self.model)
 
         self.table_view.setModel(self.model)
         self.table_view.setSortingEnabled(True)
@@ -50,8 +51,12 @@ class manageMembers(QMainWindow):
         tb = self.addToolBar("File")
 
         exit = QAction(QIcon("images/door--arrow.png"), "Kilépés", self)
-        tb.actionTriggered[QAction].connect(self.toolbarpressed)
         tb.addAction(exit)
+
+        excel = QAction(QIcon("images/excel.png"), "Excel", self)
+        tb.addAction(excel)
+
+        tb.actionTriggered[QAction].connect(self.toolbarpressed)
 
         # self.delete_button.clicked.connect(lambda: self.model.delete(self.table_view.selectedIndexes()[0]))
         self.delete_button.clicked.connect(self.tag_torles)
@@ -71,6 +76,12 @@ class manageMembers(QMainWindow):
             reply = QMessageBox.question(None, 'Hiba!', 'Módosítás előtt jelöljön ki egy sort!', QMessageBox.Ok)
 
     def toolbarpressed(self, a):
-        print("Pressed:", a.text())
+        # print("Pressed:", a.text())
         if a.text() == "Kilépés":
             self.close()
+        if a.text() == "Excel":
+            # print("Indulhat az excel exportálás")
+            self.adatok = self.client.get_all(self.table_name)
+            self._data = self.adatok[0]
+            # print(self._data)
+            p.save_as(array=self._data, dest_file_name="tagok.xlsx")
