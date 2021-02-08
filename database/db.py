@@ -45,7 +45,31 @@ class MysqlClient(QObject):
             data.append(adatok)
 
             data.append(field_names)
-            # print(data)
+            print(data)
+            return data
+
+        return None
+
+    def get_active_user(self):
+        """ Tábla tartalmának lekérése ( select * from members)
+            Visszaadott érték:
+            ha a tábla nem üres: tuple-k listája
+            ha a tábla üres: üres lista []
+            Ha a tábla nem létezik: None
+            A mezőneveket is lekérdezzük, és hozzáfűzzük a 'data' -hoz
+            """
+        data = []
+        if self.exist_table("members"):
+            self.cursor.execute("SELECT * FROM members WHERE aktiv")
+            # print(self.cursor.fetchall())
+
+            field_names = [i[0] for i in self.cursor.description]
+            adatok = [list(row)[:-1] for row in self.cursor.fetchall()]
+
+            data.append(adatok)
+
+            data.append(field_names)
+            print(data)
             return data
 
         return None

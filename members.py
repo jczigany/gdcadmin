@@ -21,7 +21,7 @@ class manageMembers(QMainWindow):
         self.table_name = "members"
 
         main_layout.addWidget(self.table_view)
-        fejlec = ['id', "Vezetéknév", "Utónév", "Született", "Ir.szám", "Helység", "Cím", "Telefon", "E-mail", "Tagság kezdete"]
+        fejlec = ['id', "Vezetéknév", "Utónév", "Született", "Ir.szám", "Helység", "Cím", "Telefon", "E-mail", "Tagság kezdete", 'Aktív']
         self.model = TableModel(self.table_name, fejlec)
         # self.model = TableModel(self.table_name)
         # print(self.model)

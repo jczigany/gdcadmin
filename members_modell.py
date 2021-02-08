@@ -43,6 +43,7 @@ class MyFormDialog(QDialog):
         self.mezo_nevek.append("Telefon")
         self.mezo_nevek.append("E-mail")
         self.mezo_nevek.append("Tagság kezdete")
+        self.mezo_nevek.append("Aktív")
         self.layout = QFormLayout()
         self.setLayout(self.layout)
         for i in range(len(self.mezo_nevek)):
@@ -96,6 +97,7 @@ class TableModel(QAbstractTableModel):
 
     def load_data(self, table):
         self.adatok = self.client.get_all(table)
+        # self.adatok = self.client.get_active_user()
         self._data = self.adatok[0]
         # print(self._data)
         if not self.fejlec:
@@ -265,6 +267,6 @@ sor törlésére készül.\n A törlés nem visszavonható!\n Biztos benne?', QM
             client.update_table(self.table, mezo_rekord)
 
             self.layoutAboutToBeChanged.emit()
-            for i in range(len(self.form_window.mezo_nevek)):
+            for i in range(len(mezo_rekord)):
                 self._data[index.row()][i] = mezo_rekord[i]
             self.layoutChanged.emit()
