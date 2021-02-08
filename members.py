@@ -46,8 +46,9 @@ class manageMembers(QMainWindow):
         gomb_layout.addItem(self.space)
 
         # self.resize(320, 200)
-        self.setFixedSize(800, 600)
-        self.setWindowFlags(Qt.Window|Qt.WindowTitleHint)
+        self.setFixedSize(1000, 800)
+        # self.showMaximized()
+        # self.setWindowFlags(Qt.Window|Qt.WindowTitleHint)
         tb = self.addToolBar("File")
 
         exit = QAction(QIcon("images/door--arrow.png"), "Kilépés", self)

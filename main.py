@@ -19,6 +19,7 @@ class AppWindows(QMainWindow):
         super(AppWindows, self).__init__()
         self.setWindowTitle("Admin for G.D.C powered by Jcigi")
         self.resize(1000,800)
+        # self.showMaximized()
         widget = QWidget()
         main_layout = QVBoxLayout()
         widget.setLayout(main_layout)
@@ -48,8 +49,10 @@ class AppWindows(QMainWindow):
             mezo_rekord = [0]
 
             for i in range(len(self.tagdij_form_window.mezo_ertekek)):
-                mezo_rekord.append(self.tagdij_form_window.mezo_ertekek[i].text())
-
+                if self.tagdij_form_window.mezo_ertekek[i].__class__.__name__ == 'QLineEdit':
+                    mezo_rekord.append(self.tagdij_form_window.mezo_ertekek[i].text())
+                else:
+                    mezo_rekord.append(self.tagdij_form_window.mezo_ertekek[i].currentText())
             insert_id = client.insert_rekord("kassza", mezo_rekord)
 
     @Slot()
