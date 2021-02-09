@@ -9,6 +9,7 @@ from napidij_modell import NapidijFormDialog
 from adomany_modell import AdomanyFormDialog
 from egyeb_befiz_modell import EgyebBefizFormDialog
 from members import manageMembers
+from settings import manageSettings
 
 import sys
 
@@ -116,6 +117,12 @@ class AppWindows(QMainWindow):
             print(mezo_rekord)
 
             insert_id = client.insert_rekord("kassza", mezo_rekord)
+
+    @Slot()
+    def settings_slot(self):
+        print("Paraméterek beállítása")
+        manage_settings_window = manageSettings(self)
+        manage_settings_window.show()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

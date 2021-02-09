@@ -50,3 +50,10 @@ def create_menus(self):
 
     # Kiadások menü
     self.kiadasok_menu = self.menu.addMenu("Kiadás")
+
+    # Beállítások menü
+    self.beallitasok_menu = self.menu.addMenu("Beállítások")
+    # Paraméterek beállítása action
+    beallitasok_action = QAction("Paraméterek beállítása", self)
+    beallitasok_action.triggered.connect(self.settings_slot)
+    self.beallitasok_menu.addAction(beallitasok_action)
