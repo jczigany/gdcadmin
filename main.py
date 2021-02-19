@@ -125,7 +125,7 @@ class AppWindows(QMainWindow):
         manage_settings_window.show()
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
+    app = QApplication([])
     # win = MainWindow()
     win = AppWindows()
     win.show()

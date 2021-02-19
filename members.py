@@ -1,10 +1,28 @@
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QMainWindow, QTableView, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, \
+from PySide2.QtWidgets import QApplication, QMainWindow, QTableView, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, \
     QAction, QSpacerItem, QSizePolicy, QMessageBox
 from PySide2.QtCore import *
-from members_modell import TableModel
-from database.db import MysqlClient
+
+import sys
+from PySide2.QtSql import QSqlDatabase, QSqlTableModel
 import pyexcel as p
+from members_modell import MyFormDialog
+# from database.db import MysqlClient
+
+db = QSqlDatabase.addDatabase('QMYSQL')
+db.setHostName('localhost')
+db.setDatabaseName('gdcadmindb')
+db.setUserName('gdcadminuser')
+db.setPassword('GdcAdmin1968')
+
+if not db.open():
+    QMessageBox.critical(
+        None,
+        "App Name - Error!",
+        "Database Error: %s" % db.lastError().text(),
+    )
+    sys.exit(1)
+
 
 class manageMembers(QMainWindow):
     def __init__(self, parent):
@@ -15,40 +33,52 @@ class manageMembers(QMainWindow):
         widget.setLayout(main_layout)
 
         self.setCentralWidget(widget)
-        self.client = MysqlClient()
         self.table_view = QTableView()
-        # a megjelenített tábla neve
-        self.table_name = "members"
-
         main_layout.addWidget(self.table_view)
-        fejlec = ['id', "Vezetéknév", "Utónév", "Született", "Ir.szám", "Helység", "Cím", "Telefon", "E-mail", "Tagság kezdete", 'Aktív']
-        self.model = TableModel(self.table_name, fejlec)
-        # self.model = TableModel(self.table_name)
-        # print(self.model)
+
+        self.model = QSqlTableModel(db=db)
+        self.model.setTable("members")
+        self.model.select()
+        self.model.setEditStrategy(QSqlTableModel.OnManualSubmit)
+        self.model.setHeaderData(1, Qt.Horizontal, "Vezetéknév")
+        self.model.setHeaderData(2, Qt.Horizontal, "Utónév")
+        self.model.setHeaderData(3, Qt.Horizontal, "Született")
+        self.model.setHeaderData(4, Qt.Horizontal, "Ir.szám")
+        self.model.setHeaderData(5, Qt.Horizontal, "Helység")
+        self.model.setHeaderData(6, Qt.Horizontal, "Cím")
+        self.model.setHeaderData(7, Qt.Horizontal, "Telefon")
+        self.model.setHeaderData(8, Qt.Horizontal, "E-mail")
+        self.model.setHeaderData(9, Qt.Horizontal, "Tagság kezdete")
+        self.model.setHeaderData(10, Qt.Horizontal, "Aktív")
+        # self.model.setFilter('vezeteknev Like "Czi%"')
 
         self.table_view.setModel(self.model)
-        self.table_view.setSortingEnabled(True)
-        # Az első oszlop (id) elrejtése
         self.table_view.hideColumn(0)
         self.table_view.resizeColumnsToContents()
+        # Ha ez engedélyezve, akkor a model-nél beállított sort nem működik, ez felülírja
+        # Enélkül működik a model-es beállítás
+        self.table_view.setSortingEnabled(True)
+        # Ha engedélyezve van a fejléc szerinti rendezés, akkor UTÁNA meg lehet adni az alap sorrendet
+        self.table_view.sortByColumn(1, Qt.AscendingOrder)
 
+        self.model.dataChanged.connect(self.valtozott)
         gomb_layout = QVBoxLayout()
         main_layout.addLayout(gomb_layout)
 
         self.delete_button = QPushButton("&Tag törlése")
         self.add_button = QPushButton("&Új tag")
-        self.modify_button = QPushButton("Tag &módosítása")
+        self.apply_button = QPushButton("Módosítások alkalmazása")
+        self.cancel_button = QPushButton("Módosítások elvetése")
 
         gomb_layout.addWidget(self.delete_button)
         gomb_layout.addWidget(self.add_button)
-        gomb_layout.addWidget(self.modify_button)
+        gomb_layout.addWidget(self.apply_button)
+        gomb_layout.addWidget(self.cancel_button)
+
         self.space = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
         gomb_layout.addItem(self.space)
 
-        # self.resize(320, 200)
         self.setFixedSize(1000, 800)
-        # self.showMaximized()
-        # self.setWindowFlags(Qt.Window|Qt.WindowTitleHint)
         tb = self.addToolBar("File")
 
         exit = QAction(QIcon("images/door--arrow.png"), "Kilépés", self)
@@ -59,22 +89,34 @@ class manageMembers(QMainWindow):
 
         tb.actionTriggered[QAction].connect(self.toolbarpressed)
 
-        # self.delete_button.clicked.connect(lambda: self.model.delete(self.table_view.selectedIndexes()[0]))
         self.delete_button.clicked.connect(self.tag_torles)
-        self.add_button.clicked.connect(self.model.add)
-        self.modify_button.clicked.connect(self.tag_modositas)
+        self.add_button.clicked.connect(self.tag_hozzadas)
+        self.apply_button.clicked.connect(self.valtozas_mentese)
+        self.cancel_button.clicked.connect(self.valtozas_elvetese)
+
+    def tag_hozzadas(self):
+        self.form_window = MyFormDialog()
+        self.form_window.setWindowTitle("Új tag felvétele")
+        if self.form_window.exec_():
+            record = self.model.record()
+            record.remove(record.indexOf('id'))
+
+            for i in range(len(self.form_window.mezo_ertekek)):
+                record.setValue(i, self.form_window.mezo_ertekek[i].text())
+
+            if self.model.insertRecord(-1, record):
+                self.model.submitAll()
+                self.apply_button.setStyleSheet('')
+                self.cancel_button.setStyleSheet('')
+            else:
+                db.rollback()
 
     def tag_torles(self):
         if len(self.table_view.selectedIndexes()) > 0:
-            self.model.delete(self.table_view.selectedIndexes()[0])
+            self.model.removeRow(self.table_view.selectedIndexes()[0].row())
+            self.model.submitAll()
         else:
             reply = QMessageBox.question(None, 'Hiba!', 'Törlés előtt jelöljön ki egy sort!', QMessageBox.Ok)
-
-    def tag_modositas(self):
-        if len(self.table_view.selectedIndexes()) > 0:
-            self.model.modify(self.table_view.selectedIndexes()[0])
-        else:
-            reply = QMessageBox.question(None, 'Hiba!', 'Módosítás előtt jelöljön ki egy sort!', QMessageBox.Ok)
 
     def toolbarpressed(self, a):
         # print("Pressed:", a.text())
@@ -82,7 +124,31 @@ class manageMembers(QMainWindow):
             self.close()
         if a.text() == "Excel":
             # print("Indulhat az excel exportálás")
-            self.adatok = self.client.get_all(self.table_name)
-            self._data = self.adatok[0]
+            ###self.adatok = self.client.get_all(self.table_name)
+            ###self._data = self.adatok[0]
             # print(self._data)
-            p.save_as(array=self._data, dest_file_name="tagok.xlsx")
+            print(self.model)
+            ####p.save_as(array=self._data, dest_file_name="tagok.xlsx")
+
+    def valtozott(self):
+        self.apply_button.setStyleSheet('background-color: green;')
+        self.cancel_button.setStyleSheet('background-color: red;')
+
+    def valtozas_mentese(self):
+        print("változások mentve")
+        self.model.submitAll()
+        self.apply_button.setStyleSheet('')
+        self.cancel_button.setStyleSheet('')
+
+    def valtozas_elvetese(self):
+        print("változások elvetve")
+        self.model.revertAll()
+        self.apply_button.setStyleSheet('')
+        self.cancel_button.setStyleSheet('')
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = manageMembers()
+    window.show()
+    app.exec_()

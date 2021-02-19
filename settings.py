@@ -26,17 +26,6 @@ class manageSettings(QMainWindow):
         self.table_view.hideColumn(0)
         self.table_view.resizeColumnsToContents()
 
-        # gomb_layout = QVBoxLayout()
-        # main_layout.addLayout(gomb_layout)
-        #
-        # self.add_button = QPushButton("&Új ")
-        # # self.modify_button = QPushButton("Tag &módosítása")
-
-        # gomb_layout.addWidget(self.add_button)
-        # # gomb_layout.addWidget(self.modify_button)
-        # self.space = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        # gomb_layout.addItem(self.space)
-
         self.setFixedSize(400, 600)
         # self.setWindowFlags(Qt.Window|Qt.WindowTitleHint)
         tb = self.addToolBar("File")
