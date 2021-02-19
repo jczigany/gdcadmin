@@ -1,13 +1,12 @@
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QApplication, QMainWindow, QTableView, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, \
+from PySide2.QtWidgets import QMainWindow, QTableView, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, \
     QAction, QSpacerItem, QSizePolicy, QMessageBox
 from PySide2.QtCore import *
-
+from datetime import datetime, date
 import sys
 from PySide2.QtSql import QSqlDatabase, QSqlTableModel
 import pyexcel as p
 from members_modell import MyFormDialog
-# from database.db import MysqlClient
 
 db = QSqlDatabase.addDatabase('QMYSQL')
 db.setHostName('localhost')
@@ -119,16 +118,19 @@ class manageMembers(QMainWindow):
             reply = QMessageBox.question(None, 'Hiba!', 'Törlés előtt jelöljön ki egy sort!', QMessageBox.Ok)
 
     def toolbarpressed(self, a):
-        # print("Pressed:", a.text())
         if a.text() == "Kilépés":
             self.close()
         if a.text() == "Excel":
-            # print("Indulhat az excel exportálás")
-            ###self.adatok = self.client.get_all(self.table_name)
-            ###self._data = self.adatok[0]
-            # print(self._data)
-            print(self.model)
-            ####p.save_as(array=self._data, dest_file_name="tagok.xlsx")
+            data = []
+            for  i in range(self.model.rowCount()):
+                sor = []
+                for j in range(self.model.columnCount()):
+                    if isinstance(self.model.record(i).value(j), QDate):
+                        sor.append(self.model.record(i).value(j).toString("yyyy-MM-dd"))
+                    else:
+                        sor.append(self.model.record(i).value(j))
+                data.append(sor)
+            p.save_as(array=data, dest_file_name="tagok.xlsx")
 
     def valtozott(self):
         self.apply_button.setStyleSheet('background-color: green;')
@@ -145,10 +147,3 @@ class manageMembers(QMainWindow):
         self.model.revertAll()
         self.apply_button.setStyleSheet('')
         self.cancel_button.setStyleSheet('')
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = manageMembers()
-    window.show()
-    app.exec_()
