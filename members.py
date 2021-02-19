@@ -1,9 +1,8 @@
+import sys
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMainWindow, QTableView, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, \
     QAction, QSpacerItem, QSizePolicy, QMessageBox
 from PySide2.QtCore import *
-from datetime import datetime, date
-import sys
 from PySide2.QtSql import QSqlDatabase, QSqlTableModel
 import pyexcel as p
 from members_modell import MyFormDialog
