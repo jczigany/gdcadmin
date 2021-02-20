@@ -1,6 +1,5 @@
 from database.db import MysqlClient
-from PySide2.QtWidgets import QMainWindow, QTableView, QWidget, QApplication, QVBoxLayout, QHBoxLayout, QPushButton, \
-    QFormLayout, QDialog, QLineEdit, QDialogButtonBox
+from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QVBoxLayout
 from PySide2.QtCore import *
 from menus import create_menus
 from tagdij_modell import MyFormDialog
@@ -8,10 +7,10 @@ from berlet_modell import BerletFormDialog
 from napidij_modell import NapidijFormDialog
 from adomany_modell import AdomanyFormDialog
 from egyeb_befiz_modell import EgyebBefizFormDialog
-from members import manageMembers
-from settings import manageSettings
+from members import ManageMembers
+from settings import ManageSettings
+from PySide2.QtSql import QSqlDatabase, QSqlTableModel
 
-import sys
 
 client = MysqlClient()
 
@@ -36,13 +35,11 @@ class AppWindows(QMainWindow):
 
     @Slot()
     def new_member(self):
-        print("Új csapattag dialog")
-        manage_members_window = manageMembers(self)
+        manage_members_window = ManageMembers(self)
         manage_members_window.show()
 
     @Slot()
     def new_tagdij(self):
-        print("Új Tagdíj dialog")
         self.tagdij_form_window = MyFormDialog()
         self.tagdij_form_window.setWindowTitle("Tagdíj befizetés")
         self.tagdij_form_window.show()
@@ -58,7 +55,6 @@ class AppWindows(QMainWindow):
 
     @Slot()
     def new_berlet(self):
-        print("Bérlet vásárlás dialog")
         self.berlet_form_window = BerletFormDialog()
         self.berlet_form_window.setWindowTitle("Bérlet vásárlás")
         self.berlet_form_window.show()
@@ -72,7 +68,6 @@ class AppWindows(QMainWindow):
 
     @Slot()
     def new_napidij(self):
-        print("Napidíj befizetés")
         self.napidij_form_window = NapidijFormDialog()
         self.napidij_form_window.setWindowTitle("Napidíj befizetés")
         self.napidij_form_window.show()
@@ -88,7 +83,6 @@ class AppWindows(QMainWindow):
 
     @Slot()
     def new_adomany(self):
-        print("Adomány befizetés")
         self.adomany_form_window = AdomanyFormDialog()
         self.adomany_form_window.setWindowTitle("Adomány befizetés")
         self.adomany_form_window.show()
@@ -104,7 +98,6 @@ class AppWindows(QMainWindow):
 
     @Slot()
     def new_egyebfiz(self):
-        print("Egyéb befizetés")
         self.egyebbefiz_form_window = EgyebBefizFormDialog()
         self.egyebbefiz_form_window.setWindowTitle("Egyéb befizetés")
         self.egyebbefiz_form_window.show()
@@ -120,8 +113,7 @@ class AppWindows(QMainWindow):
 
     @Slot()
     def settings_slot(self):
-        print("Paraméterek beállítása")
-        manage_settings_window = manageSettings(self)
+        manage_settings_window = ManageSettings(self)
         manage_settings_window.show()
 
 if __name__ == '__main__':
@@ -130,4 +122,3 @@ if __name__ == '__main__':
     win = AppWindows()
     win.show()
     app.exec_()
-    # print('\n'.join(repr(w) for w in app.allWidgets()))

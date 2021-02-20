@@ -1,11 +1,10 @@
 import sys
-from PySide2.QtGui import QIcon
+from PySide2.QtGui import QIcon, QRegExpValidator
 from PySide2.QtWidgets import QMainWindow, QTableView, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, \
-    QAction, QSpacerItem, QSizePolicy, QMessageBox
+    QAction, QSpacerItem, QSizePolicy, QMessageBox, QFormLayout, QDialog, QLineEdit, QDialogButtonBox
 from PySide2.QtCore import *
 from PySide2.QtSql import QSqlDatabase, QSqlTableModel
 import pyexcel as p
-from members_modell import MyFormDialog
 
 db = QSqlDatabase.addDatabase('QMYSQL')
 db.setHostName('localhost')
@@ -22,9 +21,62 @@ if not db.open():
     sys.exit(1)
 
 
-class manageMembers(QMainWindow):
+class UjtagFormDialog(QDialog):
+    """ A tábla alapján állítjuk össze a form-ot."""
+
+    def __init__(self):
+        super(UjtagFormDialog, self).__init__()
+        self.mezo_nevek = []
+        self.mezo_ertekek = []
+
+        reg_irszam = QRegExp('(10[1-9][0-9]|1[1-2][0-9]{2}|[2-9][0-9]{3})$')
+        irszValidator = QRegExpValidator(reg_irszam)
+
+        reg_email = QRegExp('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9]+\\.[a-zA-Z]{2,4}')
+        emailValidator = QRegExpValidator(reg_email)
+
+        reg_datum = QRegExp('(19[0-9]{2}\\-([0][1-9]|[1][0-2])\\-([0][1-9]|[1-2][0-9]|3[0-1]))|(20[0-9]{2}\\-([0][1-9]|[1][0-2])\\-([0][1-9]|[1-2][0-9]|3[0-1]))')
+        datumValidator = QRegExpValidator(reg_datum)
+
+        self.mezo_nevek.append("Vezetéknév")
+        self.mezo_nevek.append("Utónév")
+        self.mezo_nevek.append("Születési idő")
+        self.mezo_nevek.append("Irányítószám")
+        self.mezo_nevek.append("Helység")
+        self.mezo_nevek.append("Utca, házszám")
+        self.mezo_nevek.append("Telefon")
+        self.mezo_nevek.append("E-mail")
+        self.mezo_nevek.append("Tagság kezdete")
+        self.mezo_nevek.append("Aktív")
+        self.layout = QFormLayout()
+        self.setLayout(self.layout)
+
+        for i in range(len(self.mezo_nevek)):
+            mezo = QLineEdit()
+            if (self.mezo_nevek[i] == "Irányítószám"):
+                mezo.setValidator(irszValidator)
+            if (self.mezo_nevek[i] == "Telefon"):
+                mezo.setInputMask("+36-99-999-9999")
+            if (self.mezo_nevek[i] == "E-mail"):
+                mezo.setValidator(emailValidator)
+            if (self.mezo_nevek[i] == "Születési idő"):
+                mezo.setValidator(datumValidator)
+            if (self.mezo_nevek[i] == "Tagság kezdete"):
+                mezo.setValidator(datumValidator)
+            if (self.mezo_nevek[i] == "Aktív"):
+                mezo.setText("1")
+            self.mezo_ertekek.append(mezo)
+            self.layout.addRow(f"{self.mezo_nevek[i]}", self.mezo_ertekek[i])
+
+        buttonbox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttonbox.accepted.connect(self.accept)
+        buttonbox.rejected.connect(self.reject)
+        self.layout.addWidget(buttonbox)
+
+
+class ManageMembers(QMainWindow):
     def __init__(self, parent):
-        super(manageMembers, self).__init__(parent)
+        super(ManageMembers, self).__init__(parent)
         self.setWindowTitle("Tagok kezelése")
         widget = QWidget()
         main_layout = QHBoxLayout()
@@ -93,7 +145,7 @@ class manageMembers(QMainWindow):
         self.cancel_button.clicked.connect(self.valtozas_elvetese)
 
     def tag_hozzadas(self):
-        self.form_window = MyFormDialog()
+        self.form_window = UjtagFormDialog()
         self.form_window.setWindowTitle("Új tag felvétele")
         if self.form_window.exec_():
             record = self.model.record()
@@ -136,13 +188,11 @@ class manageMembers(QMainWindow):
         self.cancel_button.setStyleSheet('background-color: red;')
 
     def valtozas_mentese(self):
-        print("változások mentve")
         self.model.submitAll()
         self.apply_button.setStyleSheet('')
         self.cancel_button.setStyleSheet('')
 
     def valtozas_elvetese(self):
-        print("változások elvetve")
         self.model.revertAll()
         self.apply_button.setStyleSheet('')
         self.cancel_button.setStyleSheet('')

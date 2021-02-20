@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2021. Feb 11. 11:23
+-- Létrehozás ideje: 2021. Feb 20. 09:07
 -- Kiszolgáló verziója: 10.4.17-MariaDB
 -- PHP verzió: 7.3.26
 
@@ -116,7 +116,6 @@ INSERT INTO `members` (`id`, `vezeteknev`, `utonev`, `szuletesi_ido`, `irszam`, 
 (17, 'Lukács', 'Zsolt', '1970-03-06', '2170', 'Aszód', 'Szentkereszt út 9.', '+36702125907', 'lukacs.zsolt.mester@gmail.com', '2020-06-29', 1),
 (18, 'Nagy', 'Gábor Dániel', '1990-02-02', '2100', 'Gödöllő', 'Erzsébet krt. 19.', '+36702948694', 'nagy_gabor_daniel@windowslive.com', '2020-09-11', 1),
 (19, 'Rektenwald', 'Máté', '1996-01-29', '2173', 'Kartal', 'Ady Endre utca 10.', '+36209376256', 'rektenwald96@gmail.com', '2020-09-04', 1),
-(20, 'Romhányi', 'Renáta', '1978-12-06', '2170', 'Aszód', 'Szőlő utca 16.', '+36704545791', 'reniromhanyi@gmail.com', '2020-06-29', 1),
 (21, 'Szikora', 'Tibor', '1964-04-26', '2170', 'Aszód', 'Hunyadi utca 32.', '+36707731349', 'szikora.tibor64@gmail.com', '2020-09-03', 1),
 (22, 'Tóth', 'Csaba', '1980-03-16', '2170', 'Aszód', 'Mosolygó utca 1.', '+36706081619', 'tcsking01@freemail.hu', '2020-10-17', 1),
 (23, 'Urbán', 'Gábor', '1977-08-07', '2173', 'Kartal', 'Orgona utca 8.', '+36302741284', 'urbangabor@invitel.hu', '2020-09-25', 1),
@@ -124,7 +123,8 @@ INSERT INTO `members` (`id`, `vezeteknev`, `utonev`, `szuletesi_ido`, `irszam`, 
 (25, 'Varga', 'Zoltán', '1969-04-05', '2173', 'Kartal', 'Kodály Zoltán utca 9/A', '+36304022031', 'vozo.hu@gmail.com', '2020-09-25', 1),
 (26, 'Varjú', 'Botond', '2010-04-07', '2170', 'Aszód', 'Pesti út 2/4', '+36707799139', 'varjumonika@gmail.com', '2020-09-18', 1),
 (27, 'Varjú', 'Nándor', '2008-03-20', '2170', 'Aszód', 'Pesti út 2/4', '+36707799139', 'varjumonika@gmail.com', '2020-09-18', 1),
-(28, 'Czigány', 'János', '1968-05-20', '2170', 'Aszód', 'Szőlő utca 16.', '+36-70-367-9791', 'jczigany@infomagus.hu', '2020-06-29', 1);
+(29, 'Czigány', 'János', '1968-05-20', '2170', 'Aszód', 'Szőlő utca 16.', '+36-70-367-9791', 'jczigany59@gmail.com', '2020-06-29', 1),
+(30, 'Romhányi', 'Renáta', '1978-12-06', '2170', 'Aszód', 'Szőlő utca 16.', '+36-70-454-5791', 'reniromhanyi@gmail.com', '2020-06-29', 1);
 
 -- --------------------------------------------------------
 
@@ -200,7 +200,7 @@ ALTER TABLE `kassza`
 -- AUTO_INCREMENT a táblához `members`
 --
 ALTER TABLE `members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT a táblához `settings`

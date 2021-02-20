@@ -11,7 +11,7 @@ db.setDatabaseName('gdcadmindb')
 db.setUserName('gdcadminuser')
 db.setPassword('GdcAdmin1968')
 
-from members_modell import TableModel
+from members_modell_nemkell import TableModel
 from database.db import MysqlClient
 import pyexcel as p
 
