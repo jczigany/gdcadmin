@@ -118,15 +118,25 @@ class MyFormDialog(QDialog):
         befizeto_model = QSqlQueryModel()
         query = QSqlQuery(f"SELECT szuletesi_ido FROM members WHERE CONCAT(vezeteknev, ' ', utonev)= '{self.befizeto.currentText()}'", db=db)
         befizeto_model.setQuery(query)
+        tagdij_model = QSqlQueryModel()
+        query = QSqlQuery("SELECT kulcs, ertek FROM settings WHERE kulcs LIKE '%tagdij%'")
+        tagdij_model.setQuery(query)
+        print(tagdij_model.record(0), tagdij_model.rowCount())
         # Ha 12 évnél fiatalabb
         if ((befizeto_model.record(0).value(0).daysTo(QDate.currentDate())) < 4380):
-            self.jogcim.setText("Ingyenes")
-            self.osszeg.setText("0")
+            for i in range(tagdij_model.rowCount()):
+                if tagdij_model.record(i).value(0) == 'ar_gyermek_tagdij':
+                    self.jogcim.setText("Ingyenes")
+                    self.osszeg.setText(str(tagdij_model.record(i).value(1)))
         # Ha 14 évnél idősebb
         elif ((befizeto_model.record(0).value(0).daysTo(QDate.currentDate())) > 5110):
-            self.jogcim.setText("Tagdíj")
-            self.osszeg.setText("3000")
+            for i in range(tagdij_model.rowCount()):
+                if tagdij_model.record(i).value(0) == 'ar_tagdij':
+                    self.jogcim.setText("Tagdíj")
+                    self.osszeg.setText(str(tagdij_model.record(i).value(1)))
         # Egyébként (Ha 12-14 között van)
         else:
-            self.jogcim.setText("Ifjúsági tagdíj")
-            self.osszeg.setText("1500")
+            for i in range(tagdij_model.rowCount()):
+                if tagdij_model.record(i).value(0) == 'ar_ifjusagi_tagdij':
+                    self.jogcim.setText("Ifjúsági tagdíj")
+                    self.osszeg.setText(str(tagdij_model.record(i).value(1)))

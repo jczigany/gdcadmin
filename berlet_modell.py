@@ -72,6 +72,7 @@ class BerletFormDialog(QDialog):
             if (self.mezo_nevek[i] == "Jogcím"):
                 self.jogcim = QLineEdit()
                 self.jogcim.setCompleter(self.jogcim_completer)
+                self.jogcim.editingFinished.connect(self.jogcim_selected)
                 self.mezo_ertekek.append(self.jogcim)
             if (self.mezo_nevek[i] == "Év"):
                 ev = QLineEdit()
@@ -108,3 +109,16 @@ class BerletFormDialog(QDialog):
 
     def get_fizmoddata(self):
         self.fizmod_model.setStringList(["Készpénz", "Átutalás"])
+
+    def jogcim_selected(self):
+        berlet_model = QSqlQueryModel()
+        query = QSqlQuery("SELECT kulcs, ertek FROM settings WHERE kulcs LIKE '%berlet%'")
+        berlet_model.setQuery(query)
+
+        for i in range(berlet_model.rowCount()):
+            if (berlet_model.record(i).value(0) == 'ar_gyermek_berlet') and (self.jogcim.text() == 'Gyermek bérlet'):
+                self.osszeg.setText(str(berlet_model.record(i).value(1)))
+            if (berlet_model.record(i).value(0) == 'ar_ifjusagi_berlet') and (self.jogcim.text() == 'Ifjúsági bérlet'):
+                self.osszeg.setText(str(berlet_model.record(i).value(1)))
+            if (berlet_model.record(i).value(0) == 'ar_berlet') and (self.jogcim.text() == 'Bérlet'):
+                self.osszeg.setText(str(berlet_model.record(i).value(1)))

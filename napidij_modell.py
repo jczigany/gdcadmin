@@ -70,6 +70,7 @@ class NapidijFormDialog(QDialog):
             if (self.mezo_nevek[i] == "Jogcím"):
                 self.jogcim = QLineEdit()
                 self.jogcim.setCompleter(self.jogcim_completer)
+                self.jogcim.editingFinished.connect(self.jogcim_selected)
                 self.mezo_ertekek.append(self.jogcim)
             if (self.mezo_nevek[i] == "Összeg"):
                 self.osszeg = QLineEdit()
@@ -98,3 +99,14 @@ class NapidijFormDialog(QDialog):
 
     def get_fizmoddata(self):
         self.fizmod_model.setStringList(["Készpénz", "Átutalás"])
+
+    def jogcim_selected(self):
+        napidij_model = QSqlQueryModel()
+        query = QSqlQuery("SELECT kulcs, ertek FROM settings WHERE kulcs LIKE '%napidij%'")
+        napidij_model.setQuery(query)
+
+        for i in range(napidij_model.rowCount()):
+            if (napidij_model.record(i).value(0) == 'ar_ifjusagi_napidij') and (self.jogcim.text() == 'Ifjúsági napidíj'):
+                self.osszeg.setText(str(napidij_model.record(i).value(1)))
+            if (napidij_model.record(i).value(0) == 'ar_napidij') and (self.jogcim.text() == 'Napidíj'):
+                self.osszeg.setText(str(napidij_model.record(i).value(1)))
