@@ -77,7 +77,7 @@ class AppWindows(QMainWindow):
                 mezo_rekord.append(self.napidij_form_window.mezo_ertekek[i].text())
             mezo_rekord.insert(5, "0")
             mezo_rekord.insert(6, "0")
-            print(mezo_rekord)
+            # print(mezo_rekord)
 
             insert_id = client.insert_rekord("kassza", mezo_rekord)
 

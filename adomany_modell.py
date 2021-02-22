@@ -1,10 +1,21 @@
-from datetime import datetime
 from PySide2.QtWidgets import QFormLayout, QDialog, QLineEdit, QDialogButtonBox, QCompleter
 from PySide2.QtCore import *
 from PySide2.QtGui import QRegExpValidator
-from database.db import MysqlClient
+from PySide2.QtSql import QSqlDatabase, QSqlQuery, QSqlQueryModel
 
-client = MysqlClient()
+db = QSqlDatabase.addDatabase('QMYSQL')
+db.setHostName('localhost')
+db.setDatabaseName('gdcadmindb')
+db.setUserName('gdcadminuser')
+db.setPassword('GdcAdmin1968')
+
+if not db.open():
+    QMessageBox.critical(
+        None,
+        "App Name - Error!",
+        "Database Error: %s" % db.lastError().text(),
+    )
+    sys.exit(1)
 
 
 class AdomanyFormDialog(QDialog):
@@ -23,9 +34,7 @@ class AdomanyFormDialog(QDialog):
         reg_datum = QRegExp('(19[0-9]{2}\\-([0][1-9]|[1][0-2])\\-([0][1-9]|[1-2][0-9]|3[0-1]))|(20[0-9]{2}\\-([0][1-9]|[1][0-2])\\-([0][1-9]|[1-2][0-9]|3[0-1]))')
         datumvalidator = QRegExpValidator(reg_datum)
 
-        jogcim_completer = QCompleter()
-        self.jogcim_model = QStringListModel()
-        jogcim_completer.setModel(self.jogcim_model)
+        self.jogcim_completer = QCompleter()
         self.get_jogcimdata()
 
         fizmod_completer = QCompleter()
@@ -46,7 +55,7 @@ class AdomanyFormDialog(QDialog):
         for i in range(len(self.mezo_nevek)):
             if (self.mezo_nevek[i] == "Dátum"):
                 datum = QLineEdit()
-                datum.setText(datetime.today().strftime('%Y-%m-%d'))
+                datum.setText(QDate.currentDate().toString("yyyy-MM-dd"))
                 datum.setValidator(datumvalidator)
                 self.mezo_ertekek.append(datum)
             if (self.mezo_nevek[i] == "Nyugta száma"):
@@ -59,7 +68,7 @@ class AdomanyFormDialog(QDialog):
                 self.mezo_ertekek.append(self.befizeto)
             if (self.mezo_nevek[i] == "Jogcím"):
                 self.jogcim = QLineEdit()
-                self.jogcim.setCompleter(jogcim_completer)
+                self.jogcim.setCompleter(self.jogcim_completer)
                 self.mezo_ertekek.append(self.jogcim)
             if (self.mezo_nevek[i] == "Összeg"):
                 self.osszeg = QLineEdit()
@@ -81,9 +90,10 @@ class AdomanyFormDialog(QDialog):
         self.layout.addWidget(buttonbox)
 
     def get_jogcimdata(self):
-        client.cursor.execute("SELECT jogcim FROM jogcim order by jogcim")
-        adatok = [list(row)[0] for row in client.cursor.fetchall()]
-        self.jogcim_model.setStringList(adatok)
+        jogcimek_model = QSqlQueryModel()
+        query = QSqlQuery("SELECT jogcim FROM jogcim order by jogcim", db=db)
+        jogcimek_model.setQuery(query)
+        self.jogcim_completer.setModel(jogcimek_model)
 
     def get_fizmoddata(self):
         self.fizmod_model.setStringList(["Készpénz", "Átutalás"])

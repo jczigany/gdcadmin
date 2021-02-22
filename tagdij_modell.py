@@ -1,4 +1,4 @@
-from datetime import datetime
+# from datetime import datetime
 from PySide2.QtWidgets import QFormLayout, QDialog, QLineEdit, QDialogButtonBox, QCompleter, QComboBox
 from PySide2.QtCore import *
 from PySide2.QtGui import QRegExpValidator
@@ -55,7 +55,7 @@ class MyFormDialog(QDialog):
         for i in range(len(self.mezo_nevek)):
             if (self.mezo_nevek[i] == "Dátum"):
                 datum = QLineEdit()
-                datum.setText(datetime.today().strftime('%Y-%m-%d'))
+                datum.setText(QDate.currentDate().toString("yyyy-MM-dd"))
                 datum.setValidator(datumvalidator)
                 self.mezo_ertekek.append(datum)
             if (self.mezo_nevek[i] == "Nyugta száma"):
