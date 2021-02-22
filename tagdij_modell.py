@@ -1,18 +1,25 @@
-from datetime import datetime, date
+from datetime import datetime
 from PySide2.QtWidgets import QFormLayout, QDialog, QLineEdit, QDialogButtonBox, QCompleter, QComboBox
 from PySide2.QtCore import *
 from PySide2.QtGui import QRegExpValidator
-from database.db import MysqlClient
+from PySide2.QtSql import QSqlDatabase, QSqlQuery, QSqlQueryModel
 
-client = MysqlClient()
+db = QSqlDatabase.addDatabase('QMYSQL')
+db.setHostName('localhost')
+db.setDatabaseName('gdcadmindb')
+db.setUserName('gdcadminuser')
+db.setPassword('GdcAdmin1968')
+
+if not db.open():
+    QMessageBox.critical(
+        None,
+        "App Name - Error!",
+        "Database Error: %s" % db.lastError().text(),
+    )
+    sys.exit(1)
 
 
 class MyFormDialog(QDialog):
-    """ A fogadott paraméter (table) alapján állítjuk össze a form-ot.
-        Lekérdezzük a tábla struktúrát és összerakjuk a mezőnevek listáját,
-        kihagyva a Primary mező-nevet. Ezek lesznek a LABEl-ek. A mező értékeket
-        szintén egy LIST-ben tárojuk a későbbi feldolgozás lehetővé tétele érdekében"""
-
     def __init__(self):
         super(MyFormDialog, self).__init__()
         self.mezo_nevek = []
@@ -27,14 +34,7 @@ class MyFormDialog(QDialog):
         reg_datum = QRegExp('(19[0-9]{2}\\-([0][1-9]|[1][0-2])\\-([0][1-9]|[1-2][0-9]|3[0-1]))|(20[0-9]{2}\\-([0][1-9]|[1][0-2])\\-([0][1-9]|[1-2][0-9]|3[0-1]))')
         datumvalidator = QRegExpValidator(reg_datum)
 
-        # nev_completer = QCompleter()
-        # self.nev_model = QStringListModel()
-        # nev_completer.setModel(self.nev_model)
-        # self.get_nevdata()
-
-        jogcim_completer = QCompleter()
-        self.jogcim_model = QStringListModel()
-        jogcim_completer.setModel(self.jogcim_model)
+        self.jogcim_completer = QCompleter()
         self.get_jogcimdata()
 
         fizmod_completer = QCompleter()
@@ -63,17 +63,13 @@ class MyFormDialog(QDialog):
                 nyugta.setText("0")
                 self.mezo_ertekek.append(nyugta)
             if (self.mezo_nevek[i] == "Befizető"):
-                # self.befizeto = QLineEdit()
-                # self.befizeto.setCompleter(nev_completer)
-                # self.mezo_ertekek.append(self.befizeto)
-                # self.befizeto.editingFinished.connect(self.befizetoselected)
                 self.befizeto = QComboBox()
                 self.get_nevdata()
                 self.befizeto.currentIndexChanged.connect(self.befizetoselected)
                 self.mezo_ertekek.append(self.befizeto)
             if (self.mezo_nevek[i] == "Jogcím"):
                 self.jogcim = QLineEdit()
-                self.jogcim.setCompleter(jogcim_completer)
+                self.jogcim.setCompleter(self.jogcim_completer)
                 self.mezo_ertekek.append(self.jogcim)
             if (self.mezo_nevek[i] == "Év"):
                 ev = QLineEdit()
@@ -94,7 +90,6 @@ class MyFormDialog(QDialog):
             if (self.mezo_nevek[i] == "Megjegyzés"):
                 megjegyzes = QLineEdit()
                 self.mezo_ertekek.append(megjegyzes)
-            print(self.mezo_ertekek)
             self.layout.addRow(f"{self.mezo_nevek[i]}", self.mezo_ertekek[i])
 
         buttonbox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -103,15 +98,16 @@ class MyFormDialog(QDialog):
         self.layout.addWidget(buttonbox)
 
     def get_nevdata(self):
-        client.cursor.execute("SELECT concat(vezeteknev, ' ', utonev) as nev FROM members order by nev")
-        adatok = [list(row)[0] for row in client.cursor.fetchall()]
-        # self.nev_model.setStringList(adatok)
-        self.befizeto.addItems(adatok)
+        nevlista_model = QSqlQueryModel()
+        query = QSqlQuery("SELECT concat(vezeteknev, ' ', utonev) as nev FROM members order by nev", db=db)
+        nevlista_model.setQuery(query)
+        self.befizeto.setModel(nevlista_model)
 
     def get_jogcimdata(self):
-        client.cursor.execute("SELECT jogcim FROM jogcim order by jogcim")
-        adatok = [list(row)[0] for row in client.cursor.fetchall()]
-        self.jogcim_model.setStringList(adatok)
+        jogcimek_model = QSqlQueryModel()
+        query = QSqlQuery("SELECT jogcim FROM jogcim order by jogcim", db=db)
+        jogcimek_model.setQuery(query)
+        self.jogcim_completer.setModel(jogcimek_model)
 
     def get_fizmoddata(self):
         self.fizmod_model.setStringList(["Készpénz", "Átutalás"])
@@ -119,25 +115,18 @@ class MyFormDialog(QDialog):
     def befizetoselected(self):
         """ Itt lehet majd kiértékelni, hogy db-ben benne van-e a befizető. Ha igen, akkor a születési dátum
         alapján a jogcím (Tagdíj/Ifjúsági tagdíj) illetve az összeg (1.500/3.000) automatikusan kitölthető"""
-        print(self.befizeto.currentText())
-        # if (self.befizeto.text() in self.nev_model.stringList()):
-        client.cursor.execute(f"SELECT szuletesi_ido FROM members WHERE CONCAT(vezeteknev, ' ', utonev)= '{self.befizeto.currentText()}'")
-        adatok = [list(row) for row in client.cursor.fetchall()]
+        befizeto_model = QSqlQueryModel()
+        query = QSqlQuery(f"SELECT szuletesi_ido FROM members WHERE CONCAT(vezeteknev, ' ', utonev)= '{self.befizeto.currentText()}'", db=db)
+        befizeto_model.setQuery(query)
         # Ha 12 évnél fiatalabb
-        if ((date.today() - adatok[0][0]).days < 4380):
-            print("Ingyenes")
+        if ((befizeto_model.record(0).value(0).daysTo(QDate.currentDate())) < 4380):
             self.jogcim.setText("Ingyenes")
             self.osszeg.setText("0")
         # Ha 14 évnél idősebb
-        elif ((date.today() - adatok[0][0]).days > 5110):
-            print("Felnőtt")
+        elif ((befizeto_model.record(0).value(0).daysTo(QDate.currentDate())) > 5110):
             self.jogcim.setText("Tagdíj")
             self.osszeg.setText("3000")
         # Egyébként (Ha 12-14 között van)
         else:
-            print("Ifjúsági")
             self.jogcim.setText("Ifjúsági tagdíj")
             self.osszeg.setText("1500")
-
-        # else:
-        #     print("Nincs db-ben")

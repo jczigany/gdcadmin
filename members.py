@@ -153,7 +153,7 @@ class ManageMembers(QMainWindow):
 
             for i in range(len(self.form_window.mezo_ertekek)):
                 record.setValue(i, self.form_window.mezo_ertekek[i].text())
-
+                # print(i, record.value(i))
             if self.model.insertRecord(-1, record):
                 self.model.submitAll()
                 self.apply_button.setStyleSheet('')
