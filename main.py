@@ -1,4 +1,3 @@
-from database.db import MysqlClient
 from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QVBoxLayout
 from PySide2.QtCore import *
 from menus import create_menus
@@ -11,23 +10,32 @@ from members import ManageMembers
 from settings import ManageSettings
 from PySide2.QtSql import QSqlDatabase, QSqlTableModel
 
+db = QSqlDatabase.addDatabase('QMYSQL')
+db.setHostName('localhost')
+db.setDatabaseName('gdcadmindb')
+db.setUserName('gdcadminuser')
+db.setPassword('GdcAdmin1968')
 
-client = MysqlClient()
+if not db.open():
+    QMessageBox.critical(
+        None,
+        "App Name - Error!",
+        "Database Error: %s" % db.lastError().text(),
+    )
+    sys.exit(1)
+
 
 class AppWindows(QMainWindow):
     def __init__(self):
         super(AppWindows, self).__init__()
         self.setWindowTitle("Admin for G.D.C powered by Jcigi")
         self.resize(1000,800)
-        # self.showMaximized()
         widget = QWidget()
         main_layout = QVBoxLayout()
         widget.setLayout(main_layout)
         self.setCentralWidget(widget)
         # A menus.py definiálja a menüpontokat
         create_menus(self)
-
-        self.client = MysqlClient()
 
     @Slot()
     def exit_app(self):
@@ -43,73 +51,109 @@ class AppWindows(QMainWindow):
         self.tagdij_form_window = MyFormDialog()
         self.tagdij_form_window.setWindowTitle("Tagdíj befizetés")
         self.tagdij_form_window.show()
-        if self.tagdij_form_window.exec_():
-            mezo_rekord = [0]
+        model = QSqlTableModel()
+        model.setTable("kassza")
+        record = model.record()
+        record.remove(record.indexOf('id'))
 
+        if self.tagdij_form_window.exec_():
             for i in range(len(self.tagdij_form_window.mezo_ertekek)):
                 if self.tagdij_form_window.mezo_ertekek[i].__class__.__name__ == 'QLineEdit':
-                    mezo_rekord.append(self.tagdij_form_window.mezo_ertekek[i].text())
+                    record.setValue(i, self.tagdij_form_window.mezo_ertekek[i].text())
                 else:
-                    mezo_rekord.append(self.tagdij_form_window.mezo_ertekek[i].currentText())
-            insert_id = client.insert_rekord("kassza", mezo_rekord)
+                    record.setValue(i, self.tagdij_form_window.mezo_ertekek[i].currentText())
+            if model.insertRecord(-1, record):
+                model.submitAll()
+            else:
+                db.rollback()
 
     @Slot()
     def new_berlet(self):
         self.berlet_form_window = BerletFormDialog()
         self.berlet_form_window.setWindowTitle("Bérlet vásárlás")
         self.berlet_form_window.show()
+        model = QSqlTableModel()
+        model.setTable("kassza")
+        record = model.record()
+        record.remove(record.indexOf('id'))
+
         if self.berlet_form_window.exec_():
-            mezo_rekord = [0]
-
             for i in range(len(self.berlet_form_window.mezo_ertekek)):
-                mezo_rekord.append(self.berlet_form_window.mezo_ertekek[i].text())
+                record.setValue(i, self.berlet_form_window.mezo_ertekek[i].text())
+            if model.insertRecord(-1, record):
+                model.submitAll()
+            else:
+                db.rollback()
 
-            insert_id = client.insert_rekord("kassza", mezo_rekord)
 
     @Slot()
     def new_napidij(self):
         self.napidij_form_window = NapidijFormDialog()
         self.napidij_form_window.setWindowTitle("Napidíj befizetés")
         self.napidij_form_window.show()
+        model = QSqlTableModel()
+        model.setTable("kassza")
+        record = model.record()
+        record.remove(record.indexOf('id'))
+
         if self.napidij_form_window.exec_():
-            mezo_rekord = [0]
+            mezo_rekord = []
             for i in range(len(self.napidij_form_window.mezo_ertekek)):
                 mezo_rekord.append(self.napidij_form_window.mezo_ertekek[i].text())
+            mezo_rekord.insert(4, "0")
             mezo_rekord.insert(5, "0")
-            mezo_rekord.insert(6, "0")
-            # print(mezo_rekord)
-
-            insert_id = client.insert_rekord("kassza", mezo_rekord)
+            for i in range(len(mezo_rekord)):
+                record.setValue(i, mezo_rekord[i])
+                if model.insertRecord(-1, record):
+                    model.submitAll()
+                else:
+                    db.rollback()
 
     @Slot()
     def new_adomany(self):
         self.adomany_form_window = AdomanyFormDialog()
         self.adomany_form_window.setWindowTitle("Adomány befizetés")
         self.adomany_form_window.show()
+        model = QSqlTableModel()
+        model.setTable("kassza")
+        record = model.record()
+        record.remove(record.indexOf('id'))
+
         if self.adomany_form_window.exec_():
-            mezo_rekord = [0]
+            mezo_rekord = []
             for i in range(len(self.adomany_form_window.mezo_ertekek)):
                 mezo_rekord.append(self.adomany_form_window.mezo_ertekek[i].text())
+            mezo_rekord.insert(4, "0")
             mezo_rekord.insert(5, "0")
-            mezo_rekord.insert(6, "0")
-            print(mezo_rekord)
-
-            insert_id = client.insert_rekord("kassza", mezo_rekord)
+            for i in range(len(mezo_rekord)):
+                record.setValue(i, mezo_rekord[i])
+                if model.insertRecord(-1, record):
+                    model.submitAll()
+                else:
+                    db.rollback()
 
     @Slot()
     def new_egyebfiz(self):
         self.egyebbefiz_form_window = EgyebBefizFormDialog()
         self.egyebbefiz_form_window.setWindowTitle("Egyéb befizetés")
         self.egyebbefiz_form_window.show()
+        model = QSqlTableModel()
+        model.setTable("kassza")
+        record = model.record()
+        record.remove(record.indexOf('id'))
+
         if self.egyebbefiz_form_window.exec_():
-            mezo_rekord = [0]
+            mezo_rekord = []
             for i in range(len(self.egyebbefiz_form_window.mezo_ertekek)):
                 mezo_rekord.append(self.egyebbefiz_form_window.mezo_ertekek[i].text())
+            mezo_rekord.insert(4, "0")
             mezo_rekord.insert(5, "0")
-            mezo_rekord.insert(6, "0")
-            print(mezo_rekord)
-
-            insert_id = client.insert_rekord("kassza", mezo_rekord)
+            for i in range(len(mezo_rekord)):
+                record.setValue(i, mezo_rekord[i])
+                if model.insertRecord(-1, record):
+                    model.submitAll()
+                else:
+                    db.rollback()
 
     @Slot()
     def settings_slot(self):
@@ -118,7 +162,6 @@ class AppWindows(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication([])
-    # win = MainWindow()
     win = AppWindows()
     win.show()
     app.exec_()
