@@ -1,4 +1,3 @@
-# from datetime import datetime
 from PySide2.QtWidgets import QFormLayout, QDialog, QLineEdit, QDialogButtonBox, QCompleter, QComboBox
 from PySide2.QtCore import *
 from PySide2.QtGui import QRegExpValidator
