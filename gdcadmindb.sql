@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2021. Feb 20. 09:07
+-- Létrehozás ideje: 2021. Feb 24. 15:38
 -- Kiszolgáló verziója: 10.4.17-MariaDB
 -- PHP verzió: 7.3.26
 
@@ -44,7 +44,8 @@ INSERT INTO `jogcim` (`id`, `jogcim`) VALUES
 (5, 'Ifjúsági bérlet'),
 (6, 'Napidíj'),
 (7, 'Ifjúsági napidíj'),
-(8, 'Adomány');
+(8, 'Adomány'),
+(9, 'Gyermek bérlet');
 
 -- --------------------------------------------------------
 
@@ -71,7 +72,20 @@ CREATE TABLE `kassza` (
 
 INSERT INTO `kassza` (`id`, `datum`, `nyugta`, `befizeto`, `jogcim`, `ev`, `honap`, `osszeg`, `fizmod`, `megjegyzes`) VALUES
 (17, '2021-01-31', 15523245, 'Cakó Tamás', 'Tagdíj', 2021, 2, '3000', 'Átutalás', ''),
-(18, '2021-02-08', 263535, 'Guba Ferenc', 'Tagdíj', 2021, 1, '3000', 'Készpénz', '');
+(18, '2021-02-08', 263535, 'Guba Ferenc', 'Tagdíj', 2021, 1, '3000', 'Készpénz', ''),
+(19, '2021-02-22', 326582, 'Czigány János', 'Tagdíj', 2021, 3, '3000', 'Készpénz', ''),
+(20, '2021-02-22', 354895, 'Czigány Jani', 'Bérlet', 2021, 3, '5000', 'Készpénz', ''),
+(21, '2021-02-22', 1231565, 'Dávid', 'Bérlet', 2021, 4, '5000', 'Készpénz', ''),
+(22, '2021-02-22', 54512, 'Dana', 'Bérlet', 2021, 4, '4000', 'Készpénz', ''),
+(23, '2021-02-22', 213255, 'Vendég', 'Ifjúsági napidíj', 0, 0, '500', 'Készpénz', ''),
+(24, '2021-02-22', 1254872, 'Vendég', 'Adomány', 0, 0, '45000', 'Készpénz', ''),
+(25, '2021-02-22', 545485, 'Polgármesteri Hivatal', 'Támogatás', 0, 0, '100000', 'Átutalás', ''),
+(26, '2021-02-22', 1111111, 'Czigány János', 'Tagdíj', 2021, 5, '3000', 'Készpénz', ''),
+(27, '2021-02-22', 222222, 'Czigány János', 'Bérlet', 2021, 5, '5000', 'Készpénz', ''),
+(42, '2021-02-22', 444444444, 'Vendég', 'Napidíj', 0, 0, '1000', 'Készpénz', ''),
+(51, '2021-02-22', 66666, 'Vendég', 'Adomány', 0, 0, '39000', 'Készpénz', ''),
+(52, '2021-02-22', 77777, 'Vendég', 'Nevezési díj', 0, 0, '2000', 'Készpénz', ''),
+(53, '2021-02-22', 8888888, 'Vendég', 'Ifjúsági napidíj', 0, 0, '500', 'Készpénz', '');
 
 -- --------------------------------------------------------
 
@@ -124,7 +138,8 @@ INSERT INTO `members` (`id`, `vezeteknev`, `utonev`, `szuletesi_ido`, `irszam`, 
 (26, 'Varjú', 'Botond', '2010-04-07', '2170', 'Aszód', 'Pesti út 2/4', '+36707799139', 'varjumonika@gmail.com', '2020-09-18', 1),
 (27, 'Varjú', 'Nándor', '2008-03-20', '2170', 'Aszód', 'Pesti út 2/4', '+36707799139', 'varjumonika@gmail.com', '2020-09-18', 1),
 (29, 'Czigány', 'János', '1968-05-20', '2170', 'Aszód', 'Szőlő utca 16.', '+36-70-367-9791', 'jczigany59@gmail.com', '2020-06-29', 1),
-(30, 'Romhányi', 'Renáta', '1978-12-06', '2170', 'Aszód', 'Szőlő utca 16.', '+36-70-454-5791', 'reniromhanyi@gmail.com', '2020-06-29', 1);
+(30, 'Romhányi', 'Renáta', '1978-12-06', '2170', 'Aszód', 'Szőlő utca 16.', '+36-70-454-5791', 'reniromhanyi@gmail.com', '2020-06-29', 1),
+(32, 'Czigány', 'Jani', '1968-05-20', '2170', 'Aszód', 'Szőlő u. 16.', '+36-70-367-9791', 'jcigi@infomagus.hu', '2020-06-29', 1);
 
 -- --------------------------------------------------------
 
@@ -188,19 +203,19 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT a táblához `jogcim`
 --
 ALTER TABLE `jogcim`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT a táblához `kassza`
 --
 ALTER TABLE `kassza`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT a táblához `members`
 --
 ALTER TABLE `members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT a táblához `settings`

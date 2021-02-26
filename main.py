@@ -1,14 +1,14 @@
 from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QVBoxLayout
 from PySide2.QtCore import *
 from menus import create_menus
-from tagdij_modell import MyFormDialog
+from tagdij_modell import MyFormDialog, add_tagdij
 from berlet_modell import BerletFormDialog
 from napidij_modell import NapidijFormDialog
 from adomany_modell import AdomanyFormDialog
 from egyeb_befiz_modell import EgyebBefizFormDialog
 from members import ManageMembers
 from settings import ManageSettings
-from PySide2.QtSql import QSqlDatabase, QSqlTableModel
+from PySide2.QtSql import QSqlDatabase, QSqlTableModel, QSqlQuery, QSqlQueryModel
 
 db = QSqlDatabase.addDatabase('QMYSQL')
 db.setHostName('localhost')
@@ -48,24 +48,7 @@ class AppWindows(QMainWindow):
 
     @Slot()
     def new_tagdij(self):
-        self.tagdij_form_window = MyFormDialog()
-        self.tagdij_form_window.setWindowTitle("Tagdíj befizetés")
-        self.tagdij_form_window.show()
-        model = QSqlTableModel()
-        model.setTable("kassza")
-        record = model.record()
-        record.remove(record.indexOf('id'))
-
-        if self.tagdij_form_window.exec_():
-            for i in range(len(self.tagdij_form_window.mezo_ertekek)):
-                if self.tagdij_form_window.mezo_ertekek[i].__class__.__name__ == 'QLineEdit':
-                    record.setValue(i, self.tagdij_form_window.mezo_ertekek[i].text())
-                else:
-                    record.setValue(i, self.tagdij_form_window.mezo_ertekek[i].currentText())
-            if model.insertRecord(-1, record):
-                model.submitAll()
-            else:
-                db.rollback()
+        add_tagdij(self)
 
     @Slot()
     def new_berlet(self):
@@ -100,8 +83,7 @@ class AppWindows(QMainWindow):
             mezo_rekord = []
             for i in range(len(self.napidij_form_window.mezo_ertekek)):
                 mezo_rekord.append(self.napidij_form_window.mezo_ertekek[i].text())
-            mezo_rekord.insert(4, "0")
-            mezo_rekord.insert(5, "0")
+
             for i in range(len(mezo_rekord)):
                 record.setValue(i, mezo_rekord[i])
                 if model.insertRecord(-1, record):
@@ -123,8 +105,7 @@ class AppWindows(QMainWindow):
             mezo_rekord = []
             for i in range(len(self.adomany_form_window.mezo_ertekek)):
                 mezo_rekord.append(self.adomany_form_window.mezo_ertekek[i].text())
-            mezo_rekord.insert(4, "0")
-            mezo_rekord.insert(5, "0")
+
             for i in range(len(mezo_rekord)):
                 record.setValue(i, mezo_rekord[i])
                 if model.insertRecord(-1, record):
@@ -146,8 +127,7 @@ class AppWindows(QMainWindow):
             mezo_rekord = []
             for i in range(len(self.egyebbefiz_form_window.mezo_ertekek)):
                 mezo_rekord.append(self.egyebbefiz_form_window.mezo_ertekek[i].text())
-            mezo_rekord.insert(4, "0")
-            mezo_rekord.insert(5, "0")
+
             for i in range(len(mezo_rekord)):
                 record.setValue(i, mezo_rekord[i])
                 if model.insertRecord(-1, record):

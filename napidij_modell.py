@@ -46,9 +46,6 @@ class NapidijFormDialog(QDialog):
         self.mezo_nevek.append("Nyugta száma")
         self.mezo_nevek.append("Befizető")
         self.mezo_nevek.append("Jogcím")
-        # Itt nincs értelme év, hónap megadásnak, ezeket implicit 0-ra állítjuk
-        # self.mezo_nevek.append("Év")
-        # self.mezo_nevek.append("Hónap")
         self.mezo_nevek.append("Összeg")
         self.mezo_nevek.append("Fizetési mód")
         self.mezo_nevek.append("Megjegyzés")

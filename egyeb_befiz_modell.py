@@ -45,8 +45,6 @@ class EgyebBefizFormDialog(QDialog):
         self.mezo_nevek.append("Nyugta száma")
         self.mezo_nevek.append("Befizető")
         self.mezo_nevek.append("Jogcím")
-        # self.mezo_nevek.append("Év")
-        # self.mezo_nevek.append("Hónap")
         self.mezo_nevek.append("Összeg")
         self.mezo_nevek.append("Fizetési mód")
         self.mezo_nevek.append("Megjegyzés")
