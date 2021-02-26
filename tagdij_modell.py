@@ -72,12 +72,7 @@ class MyFormDialog(QDialog):
                 self.honapok = QLineEdit()
                 self.honapok.setText("1")
                 self.honapok.editingFinished.connect(self.honapszam_valtozott)
-                # ev.setValidator(evvalidator)
                 self.mezo_ertekek.append(self.honapok)
-            # if (self.mezo_nevek[i] == "Hónap"):
-            #     honap = QLineEdit()
-            #     honap.setValidator(honapvalidator)
-            #     self.mezo_ertekek.append(honap)
             if (self.mezo_nevek[i] == "Összeg"):
                 self.osszeg = QLineEdit()
                 self.mezo_ertekek.append(self.osszeg)

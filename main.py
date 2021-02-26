@@ -6,6 +6,7 @@ from berlet_modell import BerletFormDialog
 from napidij_modell import NapidijFormDialog
 from adomany_modell import AdomanyFormDialog
 from egyeb_befiz_modell import EgyebBefizFormDialog
+from kiadas_model import KiadasFormDialog
 from members import ManageMembers
 from settings import ManageSettings
 from PySide2.QtSql import QSqlDatabase, QSqlTableModel, QSqlQuery, QSqlQueryModel
@@ -139,6 +140,31 @@ class AppWindows(QMainWindow):
     def settings_slot(self):
         manage_settings_window = ManageSettings(self)
         manage_settings_window.show()
+
+    @Slot()
+    def new_kiadas(self):
+        self.kiadas_form_window = KiadasFormDialog()
+        self.kiadas_form_window.setWindowTitle("Új kiadás rögzítése")
+        self.kiadas_form_window.show()
+        model = QSqlTableModel()
+        model.setTable("kassza")
+        record = model.record()
+        record.remove(record.indexOf('id'))
+
+        if self.kiadas_form_window.exec_():
+            mezo_rekord = []
+            for i in range(len(self.kiadas_form_window.mezo_ertekek)):
+                if i != 4:
+                    mezo_rekord.append(self.kiadas_form_window.mezo_ertekek[i].text())
+                else:
+                    mezo_rekord.append(int(self.kiadas_form_window.mezo_ertekek[i].text()) * -1)
+
+            for i in range(len(mezo_rekord)):
+                record.setValue(i, mezo_rekord[i])
+                if model.insertRecord(-1, record):
+                    model.submitAll()
+                else:
+                    db.rollback()
 
 if __name__ == '__main__':
     app = QApplication([])

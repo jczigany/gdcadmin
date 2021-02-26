@@ -50,6 +50,10 @@ def create_menus(self):
 
     # Kiadások menü
     self.kiadasok_menu = self.menu.addMenu("Kiadás")
+    # Úk kiadás action
+    new_kifizetes_action = QAction("új kiadás", self)
+    new_kifizetes_action.triggered.connect(self.new_kiadas)
+    self.kiadasok_menu.addAction(new_kifizetes_action)
 
     # Beállítások menü
     self.beallitasok_menu = self.menu.addMenu("Beállítások")
